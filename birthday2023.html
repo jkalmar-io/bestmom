@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday, Mom!</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 40px;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    h2 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .image {
+      margin-bottom: 50px;
+      text-align: center;
+    }
+
+    .image img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .image h3 {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    /* Animation on scroll */
+    .animate-in {
+      opacity: 0;
+      transform: translateY(20%);
+      transition: opacity 0.8s ease-in, transform 0.8s ease-in;
+    }
+
+    .animate-in.animate-in-show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Happy Birthday, Mom!</h1>
+    <h2>Caroline, Alex, and Joe wanted to plan a special dinner date for you...</h2>
+
+    <div class="image">
+      <img src="image1.jpg" alt="Image 1">
+      <h3>We found a couple places...</h3>
+    </div>
+
+    <div class="image">
+      <img src="image2.jpg" alt="Image 2">
+      <h3>you might like...</h3>
+    </div>
+
+    <div class="image">
+      <img src="image3.jpg" alt="Image 3">
+      <h3>but let us know if there's anywhere you really want to go!</h3>
+      <h3>We'll cover it!</h3>
+    </div>
+
+    <div class="image">
+      <img src="image4.jpg" alt="Image 4">
+      <h3>Love you mom, Happy Birthday! - Caroline</h3>
+    </div>
+
+    <div class="image">
+      <img src="image5.jpg" alt="Image 5">
+      <h3>Happy birthday mommy! - Alex</h3>
+    </div>
+
+    <div class="image">
+      <img src="image6.jpg" alt="Image 6">
+      <h3>Hope you get some cake! - Love Joe</h3>
+    </div>
+  </div>
+
+  <script>
+    // Add 'animate-in-show' class to elements when they enter the viewport
+    function handleScroll() {
+      const elements = document.querySelectorAll('.animate-in');
+      elements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.8) {
+          element.classList.add('animate-in-show');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('load', handleScroll);
+  </script>
+</body>
+</html>
