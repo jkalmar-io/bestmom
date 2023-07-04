@@ -6,8 +6,72 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <title>Happy Birthday, Mom!</title>
   <style>
+
+html, body {
+  width: 100%;
+}
+
+.container {
+  width: 99%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#container {
+  bottom: 0;
+  color: #fff;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  perspective: 400;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #548cb3;
+  background: linear-gradient(to bottom, #548cb3 0%, #8dc8e7 100%);
+}
+#container h1, h2, h3{
+  z-index: 320;
+  position: relative;
+}
+
+h1, h2{
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.1)
+}
+
+.image{
+  z-index: 320;
+  position: relative;
+}
+
+#sky {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 512px;
+  height: 512px;
+  margin-left: -256px;
+  margin-top: -256px;
+  transform-style: preserve-3d;
+}
+#sky div {
+  transform-style: preserve-3d;
+}
+
+.cloudLayer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 256px;
+  height: 256px;
+  margin-left: -128px;
+  margin-top: -128px;
+  transition: opacity .5s ease-out;
+}
+
 
     /* Custom Fonts */
 @font-face {
@@ -24,7 +88,7 @@ body {
 /* Heading Styles */
 h1 {
   font-family: 'Playfair Display', serif;
-  color: #fa87d9; /* Pink color */
+  color: #fcc7ed; /* Pink color */
   font-weight: bold;
 }
 
@@ -76,7 +140,7 @@ img {
       margin-bottom: 50px;
       padding: 10px;
       text-align: center;
-      background-color: #ffe0f6;
+      background-color: #fce6f6;
       border-radius: 5px;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
@@ -105,6 +169,7 @@ img {
   </style>
 </head>
 <body>
+    <div id="container">
   <div class="container">
     <h1>Happy Birthday, Mom!</h1>
     <h2>Caroline, Alex, and Joe wanted to plan a special dinner date for you...</h2>
@@ -141,6 +206,7 @@ img {
     </div>
   </div>
 
+  </div>
   <script>
     // Add 'animate-in-show' class to elements when they enter the viewport
     function handleScroll() {
@@ -155,6 +221,148 @@ img {
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('load', handleScroll);
+  </script>
+
+  <script>
+    var CloudGenerator = function(el, image) {
+  this.viewport = el;
+  this.cloudBG = image;
+  this.world = document.createElement('div');
+  
+  this.world.setAttribute('id', 'sky');
+  this.viewport.appendChild(this.world);
+  
+  var margin = 300;
+  this.width = this.viewport.offsetWidth - margin;
+  this.height = this.viewport.offsetHeight - margin;
+
+  this.imgLayers = [];
+  this.numClouds = 5;
+}
+	
+CloudGenerator.prototype.createCloud = function(x) {
+  var cloud = [];
+
+  cloud.x = x;
+  cloud.y = this.height/2 - ( Math.random() * this.height );
+  cloud.z = 400 - ( Math.random() * 512 );
+  cloud.xSpeed = 0.2 + 0.05 * Math.random();
+
+  for( var i = 0; i < 5 + Math.round( Math.random() * 10 ); i++ ) {
+    var image = document.createElement( 'img' );
+    var r = Math.random();
+    image.setAttribute( 'src', this.cloudBG );
+    image.className = 'cloudLayer';
+
+    var x = cloud.x + 0.2*(256 - ( Math.random() * 512 ));
+    var y = cloud.y + 0.2*(256 - ( Math.random() * 512 ));
+    var z = cloud.z + 100 - ( Math.random() * 200 );
+    var a = Math.random() * 360;
+    var s = .25 + Math.random();
+
+    image.data = { 
+      x: x,
+      y: y,
+      z: z,
+      a: a,
+      s: s,
+      xSpeed: cloud.xSpeed,
+      rSpeed: .1 * Math.random()
+    };
+    var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px ) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
+    image.style.webkitTransform = t;
+    image.style.MozTransform = t;
+    image.style.oTransform = t;
+    image.style.zIndex = Math.floor(z);
+
+    this.world.appendChild( image );
+    this.imgLayers.push( image );
+  }
+}
+
+CloudGenerator.prototype.update = function() {
+  var length = this.imgLayers.length;
+  if(length < this.numClouds*7) {
+    console.log("creating cloud");
+    this.createCloud(-this.width - 100);
+  }
+
+  for( var i = length - 1; i >=0; i-- ) {
+    var layer = this.imgLayers[i];
+    if(!layer) { continue; };
+    layer.data.x += layer.data.xSpeed;
+    layer.data.a += layer.data.rSpeed;
+    
+    // if cloud is past x threshold, remove layer
+    if ( layer.data.x > (this.width + 300)) {
+      console.log("deleting layer", i);
+      this.world.removeChild(layer);
+      this.imgLayers.splice(i, 1);
+      continue;
+    }
+  
+    var t = 'translateX( ' + layer.data.x + 'px ) translateY( ' + layer.data.y + 'px ) translateZ( ' + layer.data.z + 'px )  rotateZ( ' + layer.data.a + 'deg ) scale( ' + layer.data.s + ')';
+    layer.style.webkitTransform = t;
+    layer.style.MozTransform = t;
+    layer.style.oTransform = t;
+  }
+
+  requestAnimationFrame( this.update.bind(this) );
+
+}
+
+CloudGenerator.prototype.updateZoom = function(zoom) {
+	var t = 'translateZ( ' + zoom + 'px )';
+	this.world.style.webkitTransform = t;
+	this.world.style.MozTransform = t;
+	this.world.style.oTransform = t;
+  $('.cloudLayer').css('opacity', 1);
+  
+  if (zoom >= 1) {
+    zoom -= 5;
+    requestAnimationFrame( this.updateZoom.bind(this, zoom) );
+  }
+}
+
+CloudGenerator.prototype.init = function() {
+  var lastTime = 0,
+      vendors = ['ms', 'moz', 'webkit', 'o'];
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; x++) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelRequestAnimationFrame = window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame)
+    window.requestAnimationFrame = function(callback, element) {
+    var currTime = new Date().getTime(),
+        timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+        id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+  };
+
+  if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame = function(id) { clearTimeout(id); };
+  }
+  
+  this.viewport.style.webkitPerspective = 400;
+  this.viewport.style.MozPerspective = 400;
+  this.viewport.style.oPerspective = 400;
+  
+	var intial_positions = [-this.width/2 + this.width*0.05, -this.width/2 + this.width*0.2, 0, this.width/2 + this.width*0.05, this.width/2 + this.width*0.35];
+  for( var i = 0; i < this.numClouds; i++ ) {
+    this.createCloud(intial_positions[i]);
+  }
+  this.updateZoom(1500);
+ 
+  this.update();
+}
+
+var viewport = document.getElementById( 'container' );
+var clouds = new CloudGenerator(viewport, 'http://www.clicktorelease.com/blog/css3dclouds/cloud.png');
+clouds.init();
+
+
   </script>
 </body>
 </html>
